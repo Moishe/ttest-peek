@@ -7,14 +7,14 @@ function normalRand() {
     return [r1, r2];
 }
 
-function Sample() {
+function DistributionSample() {
   this.n = 0;
   this.mean = 0;
   this.m2 = 0;
   this.buckets = [];
 }
 
-Sample.prototype.update = function(x) {
+DistributionSample.prototype.update = function(x) {
   this.n += 1;
   var delta = (x - this.mean);
   this.mean += delta / this.n;
@@ -31,11 +31,11 @@ Sample.prototype.update = function(x) {
   }
 };
 
-Sample.prototype.stdev = function() {
+DistributionSample.prototype.stdev = function() {
   return Math.sqrt(this.m2);
 }
 
-Sample.prototype.dump = function() {
+DistributionSample.prototype.dump = function() {
   console.log([this.mean, this.m2, this.buckets].join());
 };
 
@@ -79,46 +79,57 @@ function ttest(a, b) {
   return p;
 }
 
-var numPairs = 100;
-var samplePairs = [];
-var stopped = {};
-for (var i = 0; i < numPairs; i++) {
-  samplePairs.push([new Sample(), new Sample()]);
-}
+function runTestWithDistributions() {
+  var numPairs = 10000;
+  var samplePairs = [];
+  var stopped = {};
+  for (var i = 0; i < numPairs; i++) {
+    samplePairs.push([new DistributionSample(), new DistributionSample()]);
+  }
 
-for (var i = 0; i < 1000; i++) {
+  var stopsThisRound;
+  for (var i = 0; i < 100; i++) {
+    stopsThisRound = 0;
+    for (var j = 0; j < numPairs; j++) {
+      if (stopped[j]) {
+        continue;
+      }
+      a = normalRand();
+      b = normalRand();
+
+      samplePairs[j][0].update(a[0]);
+      //samplePairs[j][0].update(a[1]);
+      samplePairs[j][1].update(b[0]);
+      //samplePairs[j][1].update(b[1]);
+
+      pvalue = ttest(samplePairs[j][0], samplePairs[j][1]);
+      if (pvalue < 0.05) {
+        stopsThisRound += 1;
+        stopped[j] = true;
+        /*
+        console.log('triggered stop: ' + pvalue);
+        samplePairs[j][0].dump();
+        samplePairs[j][1].dump();
+        */
+      }
+    }
+
+    console.log('stopsThisRound: ' + stopsThisRound);
+  }
+
+  var triggered = 0;
   for (var j = 0; j < numPairs; j++) {
     if (stopped[j]) {
-      continue;
-    }
-    a = normalRand();
-    b = normalRand();
-
-    samplePairs[j][0].update(a[0]);
-    //samplePairs[j][0].update(a[1]);
-    samplePairs[j][1].update(b[0]);
-    //samplePairs[j][1].update(b[1]);
-
-    pvalue = ttest(samplePairs[j][0], samplePairs[j][1]);
-    if (pvalue < 0.05) {
-      stopped[j] = true;
-      console.log('triggered stop: ' + pvalue);
-      samplePairs[j][0].dump();
-      samplePairs[j][1].dump();
-    }
-  }
-}
-
-var triggered = 0;
-for (var j = 0; j < numPairs; j++) {
-  if (stopped[j]) {
-    triggered += 1;
-  } else {
-    pvalue = ttest(samplePairs[j][0], samplePairs[j][1]);
-    if (pvalue < 0.05) {
       triggered += 1;
+    } else {
+      pvalue = ttest(samplePairs[j][0], samplePairs[j][1]);
+      if (pvalue < 0.05) {
+        triggered += 1;
+      }
     }
   }
+
+  console.log(triggered / numPairs + " false positive percentage.");
 }
 
-console.log(triggered / numPairs + " false positive percentage.")
+runTestWithDistributions();
