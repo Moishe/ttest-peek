@@ -7,14 +7,14 @@ function normalRand() {
     return [r1, r2];
 }
 
-function DistributionSample() {
+function VectorSample() {
   this.n = 0;
   this.mean = 0;
   this.m2 = 0;
   this.buckets = [];
 }
 
-DistributionSample.prototype.update = function(x) {
+VectorSample.prototype.update = function(x) {
   this.n += 1;
   var delta = (x - this.mean);
   this.mean += delta / this.n;
@@ -31,11 +31,11 @@ DistributionSample.prototype.update = function(x) {
   }
 };
 
-DistributionSample.prototype.stdev = function() {
+VectorSample.prototype.stdev = function() {
   return Math.sqrt(this.m2);
 }
 
-DistributionSample.prototype.dump = function() {
+VectorSample.prototype.dump = function() {
   console.log([this.mean, this.m2, this.buckets].join());
 };
 
@@ -79,12 +79,12 @@ function ttest(a, b) {
   return p;
 }
 
-function runTestWithDistributions() {
+function runTestWithVectors() {
   var numPairs = 10000;
   var samplePairs = [];
   var stopped = {};
   for (var i = 0; i < numPairs; i++) {
-    samplePairs.push([new DistributionSample(), new DistributionSample()]);
+    samplePairs.push([new VectorSample(), new VectorSample()]);
   }
 
   var stopsThisRound;
@@ -132,4 +132,4 @@ function runTestWithDistributions() {
   console.log(triggered / numPairs + " false positive percentage.");
 }
 
-runTestWithDistributions();
+runTestWithVectors();
