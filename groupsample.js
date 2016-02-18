@@ -19,8 +19,8 @@ GroupSample.prototype.df = function() {
 }
 
 GroupSample.prototype.dump = function() {
-
-}
+  console.log(this.groups);
+};
 
 GroupSample.prototype.chiSquare = function(expected) {
   var cs = 0;
@@ -37,16 +37,23 @@ GroupSample.prototype.chiSquare = function(expected) {
     }
   }
   return cs;
-}
+};
 
 GroupSample.prototype.pValue = function(expected) {
   var x2 = this.chiSquare(expected);
   var df = this.df();
-  console.log(x2, df);
+  return this.pValueRecursive(x2, df);
+};
+
+GroupSample.prototype.pValueRecursive = function(x2, df) {
   var Pi = Math.PI;
 
-  if (x2 > 1000 | df > 1000) {
-    var q = ChiSq((x2 - df) * (x2 - df) / (2 * df), 1) / 2;
+  if (df == 1 && x2 > 1000) {
+    return 0;
+  }
+
+  if (x2 > 1000 || df > 1000) {
+    var q = this.pValueRecursive((x2 - df) * (x2 - df) / (2 * df), 1) / 2;
     if (x2 > df) {
       return q;
     }
@@ -71,14 +78,3 @@ GroupSample.prototype.pValue = function(expected) {
   }
   return 1 - p;
 }
-
-var expected = new GroupSample();
-expected.update('red', 100);
-expected.update('blue', 50);
-
-var observed = new GroupSample();
-observed.update('red', 90);
-observed.update('blue', 60);
-
-console.log('chi-square: ' + observed.chiSquare(expected));
-console.log('pvalue: ' + observed.pValue(expected));

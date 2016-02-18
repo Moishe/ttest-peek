@@ -62,15 +62,50 @@ function runTestWithVectors() {
 
 // defaults for number of runs can be calculated with experimentcalculator.com
 function runTestWithGroups() {
+  var triggered = [];
   var expected = new GroupSample();
-  groupSample.update('unconverted', 100000);
-  groupSample.update('converted', 4000);
 
-  var testsToRun = 1000;
-  var tests = [];
+  var unconverted = 96000;
+  var converted = 4000;
+  var daysToRun = 10;
+
+  var testsToRun = 100;
+  var testPairs = [];
   for (var i = 0; i < testsToRun; i++) {
-
+    testPairs[i] = [new GroupSample(), new GroupSample()];
   }
+
+  var slicesPerDay = 1;
+  for (var i = 0; i < daysToRun * slicesPerDay; i++) {
+    for (var k = 0; k < testsToRun; k++) {
+      if (triggered[k]) {
+        continue;
+      }
+
+      for (var j = 0; j < (converted + unconverted) * slicesPerDay; j++) {
+        for (var m = 0; m < 2; m++) {
+          c = Math.random() < (converted / (converted + unconverted));
+          testPairs[k][m].update(c ? 'converted' : 'unconverted');
+        }
+      }
+      if (testPairs[k][0].pValue(testPairs[k][1]) <= 0.05) {
+        triggered[k] = true;
+      }
+    }
+  }
+
+  var triggeredCount = 0;
+  for (var k = 0; k < testsToRun; k++) {
+    var p = testPairs[k][0].pValue(testPairs[k][1]);
+    if (triggered[k] || p <= 0.05) {
+      triggeredCount += 1;
+      console.log("p: " + p);
+      testPairs[k][0].dump();
+      testPairs[k][1].dump();
+    }
+  }
+  console.log('triggeredCount: ' + triggeredCount);
 }
 
 //runTestWithVectors();
+runTestWithGroups();
