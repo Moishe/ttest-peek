@@ -60,4 +60,17 @@ function runTestWithVectors() {
   console.log(triggered / numPairs + " false positive percentage.");
 }
 
+// defaults for number of runs can be calculated with experimentcalculator.com
+function runTestWithGroups() {
+  var expected = new GroupSample();
+  groupSample.update('unconverted', 100000);
+  groupSample.update('converted', 4000);
+
+  var testsToRun = 1000;
+  var tests = [];
+  for (var i = 0; i < testsToRun; i++) {
+
+  }
+}
+
 //runTestWithVectors();
