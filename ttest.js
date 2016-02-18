@@ -61,16 +61,10 @@ function runTestWithVectors() {
 }
 
 // defaults for number of runs can be calculated with experimentcalculator.com
-function runTestWithGroups() {
+function runTestWithGroups(unconverted, converted, daysToRun, testsToRun, pValueTrigger, stopOnPeek) {
   var triggered = [];
-  var expected = new GroupSample();
-
-  var unconverted = 96000;
-  var converted = 4000;
-  var daysToRun = 10;
-
-  var testsToRun = 100;
   var testPairs = [];
+
   for (var i = 0; i < testsToRun; i++) {
     testPairs[i] = [new GroupSample(), new GroupSample()];
   }
@@ -88,7 +82,7 @@ function runTestWithGroups() {
           testPairs[k][m].update(c ? 'converted' : 'unconverted');
         }
       }
-      if (testPairs[k][0].pValue(testPairs[k][1]) <= 0.05) {
+      if (stopOnPeek && testPairs[k][0].pValue(testPairs[k][1]) <= 0.05) {
         triggered[k] = true;
       }
     }
@@ -107,5 +101,4 @@ function runTestWithGroups() {
   console.log('triggeredCount: ' + triggeredCount);
 }
 
-//runTestWithVectors();
-runTestWithGroups();
+runTestWithGroups(96000, 4000, 80, 100, 0.05, true);
