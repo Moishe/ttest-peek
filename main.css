@@ -8,6 +8,7 @@
   font-size: 10px;
 }
 
-#graph {
+.experiment-container {
   width: 440px;
+  float: left;
 }

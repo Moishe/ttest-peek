@@ -62,17 +62,16 @@ function runTestWithVectors() {
 }
 
 // defaults for number of runs can be calculated with experimentcalculator.com
-function runTestWithGroups(unconverted, converted, daysToRun, testsToRun, pValueTrigger, stopOnPeek) {
+function runTestWithGroups(container_name, unconverted, converted, daysToRun, testsToRun, expectedChange, pValueTrigger, stopOnPeek) {
   var triggered = [];
   var testPairs = [];
 
   var sampleViews = [];
-  var container = $('#graph');
   for (var i = 0; i < testsToRun; i++) {
     testPairs[i] = [new GroupSample(), new GroupSample()];
-    sampleViews[i] = new GroupSampleView(container, i);
+    sampleViews[i] = new GroupSampleView(container_name, i);
   }
-  var slicesPerDay = 1;
+  var slicesPerDay = 10;
   var i = 0;
   var interval = setInterval(function() {
     if (i >= daysToRun * slicesPerDay) {
@@ -103,7 +102,10 @@ function runTestWithGroups(unconverted, converted, daysToRun, testsToRun, pValue
         var b = 0;
         var c = Math.round((converted + unconverted) / slicesPerDay);
         var p = converted / (converted + unconverted);
-        for (var j = 0; j < c; j++) {
+        if (m == 1) {
+          p *= 1 + expectedChange;
+        }
+        for (var j = 0; j < c / 2; j++) {
           if (Math.random() <= p) {
             a += 1;
           } else {
@@ -121,10 +123,10 @@ function runTestWithGroups(unconverted, converted, daysToRun, testsToRun, pValue
       }
     }
     i += 1;
-    console.log(i);
   }, 1);
 }
 
 $( document ).ready(function() {
-  runTestWithGroups(9600, 400, 80, 100, 0.025, false);
+  runTestWithGroups('graph-1', 96000, 4000, 80, 100, 0.00, 0.05, false);
+  runTestWithGroups('graph-2', 96000, 4000, 80, 100, 0.00, 0.05, true);
 });

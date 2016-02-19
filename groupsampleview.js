@@ -3,9 +3,9 @@ rainbow.setSpectrum('red', 'green', '#00ff00');
 rainbow.setNumberRange(0, 1);
 
 function GroupSampleView(container, id) {
-  this.id = 'pair-' + id;
+  this.id = container + '-pair-' + id;
   var text = "<div class='pair-view' id='" + this.id + "'></div>";
-  $('#graph').append(text);
+  $('#' + container).append(text);
 }
 
 GroupSampleView.prototype.drawPair = function(pvalue, pair, pValueTrigger) {
