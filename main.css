@@ -1,0 +1,13 @@
+.pair-view {
+  width: 30px;
+  height: 30px;
+  margin: 1px;
+  float: left;
+  background-color: #DDDDFF;
+  font-family: monospace;
+  font-size: 10px;
+}
+
+#graph {
+  width: 330px;
+}

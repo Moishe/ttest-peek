@@ -31,6 +31,7 @@ function runTestWithVectors() {
       //samplePairs[j][1].update(b[1]);
 
       pvalue = ttest(samplePairs[j][0], samplePairs[j][1]);
+
       if (pvalue < 0.05) {
         stopsThisRound += 1;
         stopped[j] = true;
@@ -65,40 +66,56 @@ function runTestWithGroups(unconverted, converted, daysToRun, testsToRun, pValue
   var triggered = [];
   var testPairs = [];
 
+  var sampleViews = [];
+  var container = $('#graph');
   for (var i = 0; i < testsToRun; i++) {
     testPairs[i] = [new GroupSample(), new GroupSample()];
+    sampleViews[i] = new GroupSampleView(container, i);
   }
-
   var slicesPerDay = 1;
-  for (var i = 0; i < daysToRun * slicesPerDay; i++) {
+  var i = 0;
+  var interval = setInterval(function() {
+    if (i >= daysToRun * slicesPerDay) {
+      var triggeredCount = 0;
+      for (var k = 0; k < testsToRun; k++) {
+        var p = testPairs[k][0].pValue(testPairs[k][1]);
+        if (triggered[k] || p <= 0.05) {
+          triggeredCount += 1;
+          console.log("p: " + p);
+          testPairs[k][0].dump();
+          testPairs[k][1].dump();
+        }
+      }
+      console.log('triggeredCount: ' + triggeredCount);
+      clearInterval(interval);
+      return;
+    }
+    var x = 0;
     for (var k = 0; k < testsToRun; k++) {
       if (triggered[k]) {
         continue;
       }
 
-      for (var j = 0; j < (converted + unconverted) * slicesPerDay; j++) {
+      for (var j = 0; j < (converted + unconverted) / slicesPerDay; j++) {
+        x += 1;
         for (var m = 0; m < 2; m++) {
           c = Math.random() < (converted / (converted + unconverted));
           testPairs[k][m].update(c ? 'converted' : 'unconverted');
         }
       }
-      if (stopOnPeek && testPairs[k][0].pValue(testPairs[k][1]) <= 0.05) {
+      var pvalue = testPairs[k][0].pValue(testPairs[k][1]);
+      sampleViews[k].drawPair(pvalue, testPairs[k]);
+      if (stopOnPeek && pvalue <= 0.05) {
         triggered[k] = true;
       }
     }
-  }
-
-  var triggeredCount = 0;
-  for (var k = 0; k < testsToRun; k++) {
-    var p = testPairs[k][0].pValue(testPairs[k][1]);
-    if (triggered[k] || p <= 0.05) {
-      triggeredCount += 1;
-      console.log("p: " + p);
-      testPairs[k][0].dump();
-      testPairs[k][1].dump();
-    }
-  }
-  console.log('triggeredCount: ' + triggeredCount);
+    i += 1;
+    console.log(i);
+  }, 1);
+/*
+*/
 }
 
-runTestWithGroups(96000, 4000, 80, 100, 0.05, true);
+$( document ).ready(function() {
+  runTestWithGroups(9600, 400, 80, 100, 0.05, false);
+});
