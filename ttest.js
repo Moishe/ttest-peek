@@ -82,6 +82,8 @@ function runTestWithGroups(unconverted, converted, daysToRun, testsToRun, pValue
         if (triggered[k] || p <= 0.05) {
           triggeredCount += 1;
           console.log("p: " + p);
+          console.log("x2: " + testPairs[k][0].chiSquare(testPairs[k][1]));
+          console.log("df: " + testPairs[k][0].df(testPairs[k][1]));
           testPairs[k][0].dump();
           testPairs[k][1].dump();
         }
@@ -96,13 +98,16 @@ function runTestWithGroups(unconverted, converted, daysToRun, testsToRun, pValue
         continue;
       }
 
+      var groups = {'true': 0, 'false': 0};
       for (var j = 0; j < (converted + unconverted) / slicesPerDay; j++) {
         x += 1;
         for (var m = 0; m < 2; m++) {
           c = Math.random() < (converted / (converted + unconverted));
+          groups[c] += 1;
           testPairs[k][m].update(c ? 'converted' : 'unconverted');
         }
       }
+
       var pvalue = testPairs[k][0].pValue(testPairs[k][1]);
       sampleViews[k].drawPair(pvalue, testPairs[k]);
       if (stopOnPeek && pvalue <= 0.05) {
@@ -117,5 +122,5 @@ function runTestWithGroups(unconverted, converted, daysToRun, testsToRun, pValue
 }
 
 $( document ).ready(function() {
-  runTestWithGroups(9600, 400, 80, 100, 0.05, false);
+  runTestWithGroups(96000, 4000, 80, 100, 0.05, false);
 });

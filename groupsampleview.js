@@ -17,6 +17,6 @@ GroupSampleView.prototype.drawPair = function(pvalue, pair) {
   }
 
   p1 = (pair[0].groups['converted'] / (pair[0].groups['unconverted'] + pair[0].groups['converted']) * 100).toPrecision(3);
-  p2 = (pair[1].groups['converted'] / (pair[1].groups['unconverted'] + pair[1].groups['converted']) * 100).toPrecision(2);
+  p2 = (pair[1].groups['converted'] / (pair[1].groups['unconverted'] + pair[1].groups['converted']) * 100).toPrecision(3);
   $('#' + this.id).html(p1 + "<br>" + p2);
 }
