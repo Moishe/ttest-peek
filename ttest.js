@@ -80,14 +80,9 @@ function runTestWithGroups(container_name, unconverted, converted, daysToRun, te
         var p = testPairs[k][0].pValue(testPairs[k][1]);
         if (triggered[k] || p <= pValueTrigger) {
           triggeredCount += 1;
-          console.log("p: " + p);
-          console.log("x2: " + testPairs[k][0].chiSquare(testPairs[k][1]));
-          console.log("df: " + testPairs[k][0].df(testPairs[k][1]));
-          testPairs[k][0].dump();
-          testPairs[k][1].dump();
         }
       }
-      console.log('triggeredCount: ' + triggeredCount);
+      console.log((triggeredCount / testsToRun).toPrecision(3) + "% tests with p<0.05");
       clearInterval(interval);
       return;
     }
@@ -127,6 +122,6 @@ function runTestWithGroups(container_name, unconverted, converted, daysToRun, te
 }
 
 $( document ).ready(function() {
-  runTestWithGroups('graph-1', 96000, 4000, 80, 100, 0.00, 0.05, false);
-  runTestWithGroups('graph-2', 96000, 4000, 80, 100, 0.00, 0.05, true);
+  runTestWithGroups('graph-1', 96000, 4000, 80, 100, 0.01, 0.05, false);
+  runTestWithGroups('graph-2', 96000, 4000, 80, 100, 0.01, 0.05, true);
 });

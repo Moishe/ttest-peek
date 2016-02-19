@@ -1,6 +1,10 @@
-var rainbow = new Rainbow();
-rainbow.setSpectrum('red', 'green', '#00ff00');
-rainbow.setNumberRange(0, 1);
+var redGradient = new Rainbow();
+redGradient.setSpectrum('#FF3333', '#FFEEEE');
+redGradient.setNumberRange(0, 0.05);
+
+var greenGradient = new Rainbow();
+greenGradient.setSpectrum('#EEFFEE', '#33FF33');
+greenGradient.setNumberRange(0.05, 1);
 
 function GroupSampleView(container, id) {
   this.id = container + '-pair-' + id;
@@ -11,9 +15,9 @@ function GroupSampleView(container, id) {
 GroupSampleView.prototype.drawPair = function(pvalue, pair, pValueTrigger) {
   //var bkg = rainbow.colourAt(pvalue);
   if (pvalue < pValueTrigger) {
-    $('#' + this.id).css('background', 'red');
+    $('#' + this.id).css('background', '#' + redGradient.colourAt(pvalue));
   } else {
-    $('#' + this.id).css('background', 'green');
+    $('#' + this.id).css('background', '#' + greenGradient.colourAt(pvalue));
   }
 
   p1 = (pair[0].groups['converted'] / (pair[0].groups['unconverted'] + pair[0].groups['converted']) * 100).toPrecision(3);
