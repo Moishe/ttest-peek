@@ -98,14 +98,20 @@ function runTestWithGroups(unconverted, converted, daysToRun, testsToRun, pValue
         continue;
       }
 
-      var groups = {'true': 0, 'false': 0};
-      for (var j = 0; j < (converted + unconverted) / slicesPerDay; j++) {
-        x += 1;
-        for (var m = 0; m < 2; m++) {
-          c = Math.random() < (converted / (converted + unconverted));
-          groups[c] += 1;
-          testPairs[k][m].update(c ? 'converted' : 'unconverted');
+      for (var m = 0; m < 2; m++) {
+        var a = 0;
+        var b = 0;
+        var c = Math.round((converted + unconverted) / slicesPerDay);
+        var p = converted / (converted + unconverted);
+        for (var j = 0; j < c; j++) {
+          if (Math.random() <= p) {
+            a += 1;
+          } else {
+            b += 1;
+          }
         }
+        testPairs[k][m].update('converted', a);
+        testPairs[k][m].update('unconverted', b);
       }
 
       var pvalue = testPairs[k][0].pValue(testPairs[k][1]);
@@ -120,5 +126,5 @@ function runTestWithGroups(unconverted, converted, daysToRun, testsToRun, pValue
 }
 
 $( document ).ready(function() {
-  runTestWithGroups(10, 990, 800, 100, 0.025, false);
+  runTestWithGroups(9600, 400, 80, 100, 0.025, false);
 });
