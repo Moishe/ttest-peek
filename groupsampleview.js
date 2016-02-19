@@ -8,9 +8,9 @@ function GroupSampleView(container, id) {
   $('#graph').append(text);
 }
 
-GroupSampleView.prototype.drawPair = function(pvalue, pair) {
-  var bkg = rainbow.colourAt(pvalue);
-  if (pvalue < 0.05) {
+GroupSampleView.prototype.drawPair = function(pvalue, pair, pValueTrigger) {
+  //var bkg = rainbow.colourAt(pvalue);
+  if (pvalue < pValueTrigger) {
     $('#' + this.id).css('background', 'red');
   } else {
     $('#' + this.id).css('background', 'green');

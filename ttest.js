@@ -79,7 +79,7 @@ function runTestWithGroups(unconverted, converted, daysToRun, testsToRun, pValue
       var triggeredCount = 0;
       for (var k = 0; k < testsToRun; k++) {
         var p = testPairs[k][0].pValue(testPairs[k][1]);
-        if (triggered[k] || p <= 0.05) {
+        if (triggered[k] || p <= pValueTrigger) {
           triggeredCount += 1;
           console.log("p: " + p);
           console.log("x2: " + testPairs[k][0].chiSquare(testPairs[k][1]));
@@ -109,18 +109,16 @@ function runTestWithGroups(unconverted, converted, daysToRun, testsToRun, pValue
       }
 
       var pvalue = testPairs[k][0].pValue(testPairs[k][1]);
-      sampleViews[k].drawPair(pvalue, testPairs[k]);
-      if (stopOnPeek && pvalue <= 0.05) {
+      sampleViews[k].drawPair(pvalue, testPairs[k], pValueTrigger);
+      if (stopOnPeek && pvalue <= pValueTrigger) {
         triggered[k] = true;
       }
     }
     i += 1;
     console.log(i);
   }, 1);
-/*
-*/
 }
 
 $( document ).ready(function() {
-  runTestWithGroups(96000, 4000, 80, 100, 0.05, false);
+  runTestWithGroups(10, 990, 800, 100, 0.025, false);
 });
