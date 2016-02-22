@@ -71,9 +71,10 @@ function runTestWithGroups(container_name, unconverted, converted, daysToRun, te
     testPairs[i] = [new GroupSample(), new GroupSample()];
     sampleViews[i] = new GroupSampleView(container_name, i);
   }
-  var slicesPerDay = 10;
+  var slicesPerDay = 8;
   var i = 0;
   var interval = setInterval(function() {
+    pvalues = [];
     if (i >= daysToRun * slicesPerDay) {
       var triggeredCount = 0;
       for (var k = 0; k < testsToRun; k++) {
@@ -82,13 +83,14 @@ function runTestWithGroups(container_name, unconverted, converted, daysToRun, te
           triggeredCount += 1;
         }
       }
-      console.log((triggeredCount / testsToRun).toPrecision(3) + "% tests with p<0.05");
+      console.log((triggeredCount / testsToRun).toPrecision(3) + "% tests with p<" + pValueTrigger);
       clearInterval(interval);
       return;
     }
     var x = 0;
     for (var k = 0; k < testsToRun; k++) {
       if (triggered[k]) {
+        pvalues.push(0);
         continue;
       }
 
@@ -113,15 +115,17 @@ function runTestWithGroups(container_name, unconverted, converted, daysToRun, te
 
       var pvalue = testPairs[k][0].pValue(testPairs[k][1]);
       sampleViews[k].drawPair(pvalue, testPairs[k], pValueTrigger);
+      pvalues.push(pvalue);
       if (stopOnPeek && pvalue <= pValueTrigger) {
         triggered[k] = true;
       }
     }
+    $('#' + container_name + '-spark').sparkline(pvalues, { type: "bar", barWidth: 3, barSpacing: 1 });
     i += 1;
   }, 1);
 }
 
-$( document ).ready(function() {
+$(document).ready(function() {
   runTestWithGroups('graph-1', 96000, 4000, 80, 100, 0.01, 0.05, false);
   runTestWithGroups('graph-2', 96000, 4000, 80, 100, 0.01, 0.05, true);
 });

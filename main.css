@@ -12,3 +12,13 @@
   width: 440px;
   float: left;
 }
+
+.spark {
+  width: 400px;
+}
+
+.graph {
+  width: 100%;
+  height: 440px;
+  float: top;
+}
